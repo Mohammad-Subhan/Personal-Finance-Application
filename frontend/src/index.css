@@ -1,4 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+    :root {
+        --radius: 0.5rem;
+        --text: #000000;
+        --background: #ffffff;
+        --primary: #1CC176;
+        --primary-accent: #60D39F ;
+        --primary-hover: #19ad6a ;
+    }
+
+    .dark{
+        --text: #ffffff;
+        --background: #212528;
+        --primary: #1CC176;
+        --primary-accent: #2d3748;
+        --primary-hover: #4a5568;
+    }
+}
