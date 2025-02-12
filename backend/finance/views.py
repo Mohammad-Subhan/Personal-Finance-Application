@@ -1,7 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.db import IntegrityError
-from .models import Wallet, User, UserWallet, Category, Transactions, Payments
+from .models import Wallet, User, UserWallet, Category, Transaction, Payment
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from .supabase import supabase
@@ -621,7 +621,7 @@ def create_transaction(request):
                         status=400,
                     )
 
-                transaction = Transactions.objects.create(
+                transaction = Transaction.objects.create(
                     userWallet=UserWallet.objects.get(id=userWalletID),
                     amount=amount,
                     category=Category.objects.get(id=categoryID),
@@ -702,14 +702,14 @@ def delete_transaction(request):
                         status=400,
                     )
 
-                if not Transactions.objects.filter(id=transactionID).exists():
+                if not Transaction.objects.filter(id=transactionID).exists():
                     return JsonResponse(
                         {"message": "Transaction does not exist", "success": False},
                         status=400,
                     )
 
                 # Delete transaction
-                Transactions.objects.get(id=transactionID).delete()
+                Transaction.objects.get(id=transactionID).delete()
 
                 return JsonResponse(
                     {
@@ -764,13 +764,13 @@ def update_transaction(request):
                         status=400,
                     )
 
-                if not Transactions.objects.filter(id=transactionID).exists():
+                if not Transaction.objects.filter(id=transactionID).exists():
                     return JsonResponse(
                         {"message": "Transaction does not exist", "success": False},
                         status=400,
                     )
 
-                transaction = Transactions.objects.get(id=transactionID)
+                transaction = Transaction.objects.get(id=transactionID)
 
                 if amount is None:
                     amount = transaction.amount
@@ -809,7 +809,7 @@ def update_transaction(request):
                     spPerson = transaction.spPerson
 
                 # Update the transaction
-                Transactions.objects.filter(id=transactionID).update(
+                Transaction.objects.filter(id=transactionID).update(
                     amount=amount,
                     category=Category.objects.get(id=categoryID),
                     type=transactionType,
@@ -817,7 +817,7 @@ def update_transaction(request):
                     spPerson=spPerson,
                 )
 
-                transaction = Transactions.objects.get(id=transactionID)
+                transaction = Transaction.objects.get(id=transactionID)
 
                 return JsonResponse(
                     {
@@ -884,13 +884,13 @@ def get_transaction(request):
                         status=400,
                     )
 
-                if not Transactions.objects.filter(id=transactionID).exists():
+                if not Transaction.objects.filter(id=transactionID).exists():
                     return JsonResponse(
                         {"message": "Transaction does not exist", "success": False},
                         status=400,
                     )
 
-                transaction = Transactions.objects.get(id=transactionID)
+                transaction = Transaction.objects.get(id=transactionID)
 
                 return JsonResponse(
                     {
@@ -1041,7 +1041,7 @@ def create_payment(request):
                         status=400,
                     )
 
-                payment = Payments.objects.create(
+                payment = Payment.objects.create(
                     user=user,
                     type=paymentType,
                     description=description,
@@ -1107,14 +1107,14 @@ def delete_payment(request):
                         status=400,
                     )
 
-                if not Payments.objects.filter(id=paymentID).exists():
+                if not Payment.objects.filter(id=paymentID).exists():
                     return JsonResponse(
                         {"message": "Payment does not exist", "success": False},
                         status=400,
                     )
 
                 # Delete payment
-                Payments.objects.get(id=paymentID).delete()
+                Payment.objects.get(id=paymentID).delete()
 
                 return JsonResponse(
                     {
@@ -1169,13 +1169,13 @@ def update_payment(request):
                         status=400,
                     )
 
-                if not Payments.objects.filter(id=paymentID).exists():
+                if not Payment.objects.filter(id=paymentID).exists():
                     return JsonResponse(
                         {"message": "Payment does not exist", "success": False},
                         status=400,
                     )
 
-                payment = Payments.objects.get(id=paymentID)
+                payment = Payment.objects.get(id=paymentID)
 
                 if paymentType is None:
                     paymentType = payment.type
@@ -1199,7 +1199,7 @@ def update_payment(request):
                     state = payment.state
 
                 # Update the payment
-                Payments.objects.filter(id=paymentID).update(
+                Payment.objects.filter(id=paymentID).update(
                     type=paymentType,
                     description=description,
                     spPerson=spPerson,
@@ -1207,7 +1207,7 @@ def update_payment(request):
                     state=state,
                 )
 
-                payment = Payments.objects.get(id=paymentID)
+                payment = Payment.objects.get(id=paymentID)
 
                 return JsonResponse(
                     {
@@ -1265,13 +1265,13 @@ def get_payment(request):
                         status=400,
                     )
 
-                if not Payments.objects.filter(id=paymentID).exists():
+                if not Payment.objects.filter(id=paymentID).exists():
                     return JsonResponse(
                         {"message": "Payment does not exist", "success": False},
                         status=400,
                     )
 
-                payment = Payments.objects.get(id=paymentID)
+                payment = Payment.objects.get(id=paymentID)
 
                 return JsonResponse(
                     {
@@ -1322,13 +1322,13 @@ def get_all_payments(request):
             try:
                 user = request.user
 
-                if not Payments.objects.filter(user=user).exists():
+                if not Payment.objects.filter(user=user).exists():
                     return JsonResponse(
                         {"message": "Payments do not exist", "success": False},
                         status=400,
                     )
 
-                userPayments = Payments.objects.filter(user=user)
+                userPayments = Payment.objects.filter(user=user)
                 payments = []
 
                 for payment in userPayments:
@@ -1393,13 +1393,13 @@ def mark_payment(request):
                         status=400,
                     )
 
-                if not Payments.objects.filter(id=paymentID).exists():
+                if not Payment.objects.filter(id=paymentID).exists():
                     return JsonResponse(
                         {"message": "Payment does not exist", "success": False},
                         status=400,
                     )
 
-                Payments.objects.filter(id=paymentID).update(state=True)
+                Payment.objects.filter(id=paymentID).update(state=True)
 
                 return JsonResponse(
                     {
